@@ -29,10 +29,10 @@ public class History extends BaseScreen {
                 gameOver = new TextureRegion(new Texture("saucerCrashed.png"));
                 break;
             case 1:
-                historyPart = new TextureRegion(new Texture("historyPart1Test.png"));
+                historyPart = new TextureRegion(new Texture("historyPart1.png"));
                 break;
             case 2:
-                historyPart = new TextureRegion(new Texture("historyPart2Test.png"));
+                historyPart = new TextureRegion(new Texture("historyPart2.png"));
                 break;
         }
     }

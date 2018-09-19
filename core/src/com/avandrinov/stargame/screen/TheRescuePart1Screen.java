@@ -53,7 +53,7 @@ public class TheRescuePart1Screen extends BaseScreen {
                     new Texture(Gdx.files.internal("saucerLuminescence" + i + ".png"))));
         }
         regionBoom = new TextureRegion(new Texture(Gdx.files.internal("boom.png")));
-        regionMoon = new TextureRegion(new Texture(Gdx.files.internal("moon2.png")));
+        regionMoon = new TextureRegion(new Texture(Gdx.files.internal("moon.png")));
         pos = new Vector2(10f, 10f);
         for (int i = 0; i < quantityComet; i++) {
             cometList.add(new Comet(height, width));
