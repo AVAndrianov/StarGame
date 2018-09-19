@@ -13,12 +13,12 @@ public class History extends BaseScreen {
     private TextureRegion historyPart;
     private TextureRegion gameOver;
     private SpriteBatch batch;
-    private int difficult = 6;
+    private int difficultyLevel;
 
-    public History(Game game, int historyPartNumber, int difficultie) {
+    History(Game game, int historyPartNumber, int difficultyLevel) {
         super(game);
         this.historyPartNumber = historyPartNumber;
-        this.difficult = difficultie;
+        this.difficultyLevel = difficultyLevel;
     }
 
     @Override
@@ -54,14 +54,13 @@ public class History extends BaseScreen {
     public boolean keyUp(int keycode) {
         if (keycode == 62 && historyPartNumber == 0)
             game.setScreen(new MenuScreen(game));
-
         if (keycode == 66)
             switch (historyPartNumber) {
                 case 0:
-                    game.setScreen(new TheRescuePart1Screen(game, difficult));
+                    game.setScreen(new TheRescuePart1Screen(game, difficultyLevel));
                     break;
                 case 1:
-                    game.setScreen(new TheRescuePart1Screen(game, difficult));
+                    game.setScreen(new TheRescuePart1Screen(game, difficultyLevel));
                     break;
                 case 2:
                     game.setScreen(new BoardOfTheShipPart2Screen(game));
@@ -74,10 +73,10 @@ public class History extends BaseScreen {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         switch (historyPartNumber) {
             case 0:
-                game.setScreen(new TheRescuePart1Screen(game, difficult));
+                game.setScreen(new TheRescuePart1Screen(game, difficultyLevel));
                 break;
             case 1:
-                game.setScreen(new TheRescuePart1Screen(game, difficult));
+                game.setScreen(new TheRescuePart1Screen(game, difficultyLevel));
                 break;
             case 2:
                 game.setScreen(new BoardOfTheShipPart2Screen(game));
@@ -86,30 +85,8 @@ public class History extends BaseScreen {
     }
 
     @Override
-    public void resize(int width, int height) {
-        super.resize(width, height);
-    }
-
-    @Override
-    public void pause() {
-        super.pause();
-    }
-
-    @Override
-    public void resume() {
-        super.resume();
-    }
-
-    @Override
-    public void hide() {
-
-        super.hide();
-    }
-
-    @Override
     public void dispose() {
         batch.dispose();
-
         super.dispose();
     }
 }

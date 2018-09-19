@@ -12,12 +12,10 @@ import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 
-import sun.net.www.content.image.png;
-
 public class TheRescuePart1Screen extends BaseScreen {
 
     private SpriteBatch batch;
-    private TextureRegion regionSaurce;
+    private TextureRegion regionSaucer;
     private TextureRegion regionMoon;
     private TextureRegion regionBoom;
     private Vector2 pos;
@@ -29,14 +27,16 @@ public class TheRescuePart1Screen extends BaseScreen {
     private int heightSaucer = 50;
     private boolean saucerOnTheMoon = false;
     private boolean saucerLandedOnTheMoon = false;
-    private int quantityComet;
+    private int quantityComet = 10;
+    private int difficultyLevel;
     private ArrayList<Comet> cometList = new ArrayList<Comet>();
     private ArrayList<TextureRegion> listSaucerLuminescence = new ArrayList<TextureRegion>();
     private ArrayList<TextureRegion> listSaucerLandedLuminescence = new ArrayList<TextureRegion>();
 
-    public TheRescuePart1Screen(Game game, int difficulty) {
+    TheRescuePart1Screen(Game game, int difficultyLevel) {
         super(game);
-        this.quantityComet = difficulty * 8;
+        this.difficultyLevel = difficultyLevel;
+        quantityComet = quantityComet * difficultyLevel;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class TheRescuePart1Screen extends BaseScreen {
         batch = new SpriteBatch();
         height = Gdx.graphics.getHeight();
         width = Gdx.graphics.getWidth();
-        regionSaurce = new TextureRegion(new Texture("saucer.png"));
+        regionSaucer = new TextureRegion(new Texture("saucer.png"));
         for (int i = 1; i <= 4; i++) {
             listSaucerLandedLuminescence.add(new TextureRegion(
                     new Texture(Gdx.files.internal("saucerLandedLuminescence" + i + ".png"))));
@@ -75,7 +75,7 @@ public class TheRescuePart1Screen extends BaseScreen {
             batch.draw(listSaucerLuminescence.get(cycleLuminescence),
                     pos.x, pos.y, widthSaucer, heightSaucer);
         else if (saucerLandedOnTheMoon)
-            batch.draw(regionSaurce, pos.x, pos.y, widthSaucer, heightSaucer);
+            batch.draw(regionSaucer, pos.x, pos.y, widthSaucer, heightSaucer);
 
         else
             batch.draw(listSaucerLandedLuminescence.get(cycleLuminescence),
@@ -89,13 +89,15 @@ public class TheRescuePart1Screen extends BaseScreen {
         //Столкновение комет с луной
         for (int i = 0; i < quantityComet; i++) {
             Comet com = cometList.get(i);
-            if (com.getPosComet().x > 400 && com.getPosComet().y > 250
-                    && com.getPosComet().x < 580 && com.getPosComet().y < 430) {
-                batch.draw(regionBoom, com.getPosComet().x, com.getPosComet().y, 50, 50);
+            if (com.getPosComet().x > 400
+                    && com.getPosComet().y > 250
+                    && com.getPosComet().x < 580
+                    && com.getPosComet().y < 430) {
+                batch.draw(regionBoom, com.getPosComet().x, com.getPosComet().y,
+                        50, 50);
                 com.cometStartPosition();
             }
         }
-
         //Столкновение комет с кометами
         for (int i = 0; i < quantityComet - 1; i++) {
             Comet comI = cometList.get(i);
@@ -124,8 +126,10 @@ public class TheRescuePart1Screen extends BaseScreen {
         //Столкновение корабля с кометой
         for (int i = 0; i < quantityComet; i++) {
             Comet com = cometList.get(i);
-            if (pos.x + 40 > com.getPosComet().x && pos.y + 35 > com.getPosComet().y
-                    && pos.x + 10 < com.getPosComet().x + 30 && pos.y + 25 < com.getPosComet().y + 30) {
+            if (pos.x + 40 > com.getPosComet().x
+                    && pos.y + 35 > com.getPosComet().y
+                    && pos.x + 10 < com.getPosComet().x + 30
+                    && pos.y + 25 < com.getPosComet().y + 30) {
                 game.setScreen(new History(game, 0, 6));
             }
         }
@@ -141,7 +145,7 @@ public class TheRescuePart1Screen extends BaseScreen {
             if (pos.x == 450 && pos.y == 360) {
                 saucerLandedOnTheMoon = true;
                 saucerOnTheMoon = false;
-                game.setScreen(new History(game, 2, quantityComet));
+                game.setScreen(new History(game, 2, difficultyLevel));
             } else
                 saucerOnTheMoon = true;
             cycleLended++;
@@ -168,53 +172,5 @@ public class TheRescuePart1Screen extends BaseScreen {
     public void dispose() {
         batch.dispose();
         super.dispose();
-    }
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-
-        return super.touchDown(screenX, screenY, pointer, button);
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-
-        return super.keyUp(keycode);
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        super.resize(width, height);
-    }
-
-    @Override
-    public void pause() {
-        super.pause();
-    }
-
-    @Override
-    public void resume() {
-        super.resume();
-    }
-
-    @Override
-    public void hide() {
-        super.hide();
-    }
-
-    @Override
-    public boolean keyDown(int keycode) {
-//        keyPressed(keycode);
-        return super.keyDown(keycode);
-    }
-
-    public void keyPressed(int keycode) {
-
-
-    }
-
-    @Override
-    public boolean keyTyped(char character) {
-        return super.keyTyped(character);
     }
 }
