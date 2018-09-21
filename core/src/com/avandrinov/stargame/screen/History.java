@@ -12,7 +12,6 @@ public class History extends BaseScreen {
     private int historyPartNumber;
     private TextureRegion historyPart;
     private TextureRegion gameOver;
-    private SpriteBatch batch;
     private int difficultyLevel;
 
     History(Game game, int historyPartNumber, int difficultyLevel) {
@@ -23,7 +22,6 @@ public class History extends BaseScreen {
 
     @Override
     public void show() {
-        batch = new SpriteBatch();
         switch (historyPartNumber) {
             case 0:
                 gameOver = new TextureRegion(new Texture("saucerCrashed.png"));
@@ -86,7 +84,6 @@ public class History extends BaseScreen {
 
     @Override
     public void dispose() {
-        batch.dispose();
         super.dispose();
     }
 }

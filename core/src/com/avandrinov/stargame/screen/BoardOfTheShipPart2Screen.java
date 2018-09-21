@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class BoardOfTheShipPart2Screen extends BaseScreen {
-    private SpriteBatch batch;
     private TextureRegion toBeContinued;
 
     BoardOfTheShipPart2Screen(Game game) {
@@ -28,7 +27,6 @@ public class BoardOfTheShipPart2Screen extends BaseScreen {
     @Override
     public void show() {
         super.show();
-        batch = new SpriteBatch();
         toBeContinued = new TextureRegion(new Texture("BoardOfTheShipPart2.png"));
     }
 
@@ -44,7 +42,6 @@ public class BoardOfTheShipPart2Screen extends BaseScreen {
 
     @Override
     public void dispose() {
-        batch.dispose();
         super.dispose();
     }
 }
