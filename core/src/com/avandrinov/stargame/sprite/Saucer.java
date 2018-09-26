@@ -75,7 +75,7 @@ public class Saucer extends Button {
     @Override
     public void resize(Rect worldBounds) {
         setHeightProportion(worldBounds.getHeight() / size);
-        pos.set(worldBounds.pos).sub(worldBounds.getHalfWidth() - 1f, y);
+        pos.set(worldBounds.pos).sub(worldBounds.getHalfWidth() - x, y);
         this.worldBounds.set(worldBounds);
     }
 
