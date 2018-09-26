@@ -1,28 +1,37 @@
 package com.avandrinov.stargame.screen;
 
-import com.avandrinov.stargame.Comet;
-import com.avandrinov.stargame.Saucer;
+import com.avandrinov.stargame.math.Rect;
+import com.avandrinov.stargame.sprite.Boom;
+import com.avandrinov.stargame.sprite.Comet;
+import com.avandrinov.stargame.sprite.Moon;
+import com.avandrinov.stargame.sprite.Saucer;
 import com.avandrinov.stargame.base.BaseScreen;
+import com.avandrinov.stargame.sprite.CircleSmall;
+import com.avandrinov.stargame.sprite.JoyStick;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 
 public class TheRescuePart1Screen extends BaseScreen {
-
-    private TextureRegion regionMoon;
-    private TextureRegion regionBoom;
-    private int height;
-    private int width;
     private boolean saucerOnTheMoon = false;
-    private int quantityComet = 8;
+    private boolean saucerLandedOnTheMoon = false;
+    private int quantityComet = 12;
     private int difficultyLevel;
-    private ArrayList<Comet> cometList = new ArrayList<Comet>();
+    private ArrayList<Comet> cometList;
     private Saucer saucer;
+    private Moon moon;
+    private Boom boom;
+    private CircleSmall circleSmall;
+    private Vector2 baseVector;
+    private Vector2 baseVector2;
+    private TextureRegion regionComet;
+    private TextureAtlas atlasComet;
+    private JoyStick joyStick;
 
     TheRescuePart1Screen(Game game, int difficultyLevel) {
         super(game);
@@ -33,18 +42,25 @@ public class TheRescuePart1Screen extends BaseScreen {
     @Override
     public void show() {
         super.show();
-        height = Gdx.graphics.getHeight();
-        width = Gdx.graphics.getWidth();
-        saucer = new Saucer(height, width);
-        regionBoom = new TextureRegion(
-                new Texture(Gdx.files.internal(
-                        "boom.png")));
-        regionMoon = new TextureRegion(
-                new Texture(Gdx.files.internal(
-                        "moon.png")));
+        cometList = new ArrayList<Comet>();
+        joyStick = new JoyStick();
+        circleSmall = new CircleSmall();
+        joyStick = new JoyStick();
+        saucer = new Saucer();
+        moon = new Moon();
+        boom = new Boom();
+        baseVector2 = new Vector2();
+        baseVector = new Vector2();
+        loadTextures();
         for (int i = 0; i < quantityComet; i++) {
-            cometList.add(new Comet(height, width));
+            cometList.add(new Comet(regionComet));
         }
+    }
+
+    private void loadTextures() {
+        atlasComet = new TextureAtlas("textures/otherPack.txt");
+        regionComet = new TextureRegion(
+                atlasComet.findRegion("comet"));
     }
 
     @Override
@@ -54,85 +70,14 @@ public class TheRescuePart1Screen extends BaseScreen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         //Отрисовка тарелки
-        if (saucerOnTheMoon)
-            batch.draw(saucer.getListSaucerLandedLuminescence(),
-                    saucer.getPosSaucer().x,
-                    saucer.getPosSaucer().y,
-                    saucer.getSaucerWidth(),
-                    saucer.getSaucerHeight()
-            );
-        else
-            batch.draw(saucer.getListSaucerLuminescence(),
-                    saucer.getPosSaucer().x,
-                    saucer.getPosSaucer().y,
-                    saucer.getSaucerWidth(),
-                    saucer.getSaucerHeight()
-            );
-        //Отрисовка луны
-        batch.draw(regionMoon, 400, 250, 200, 200);
-        //Отрисовка комет
-        for (int i = 0; i < quantityComet; i++) {
-            Comet com = cometList.get(i);
-            batch.draw(com.getRegionComet(), com.getPosComet().x, com.getPosComet().y, 15,
-                    15, 30, 30, 1, 1, com.getRotationComet());
-        }
-        //Столкновение комет с луной
-        for (int i = 0; i < quantityComet; i++) {
-            Comet com = cometList.get(i);
-            if (com.getPosComet().x > 400
-                    && com.getPosComet().y > 250
-                    && com.getPosComet().x < 580
-                    && com.getPosComet().y < 430) {
-                batch.draw(regionBoom, com.getPosComet().x, com.getPosComet().y,
-                        50, 50);
-                com.cometStartPosition();
-            }
-        }
-        //Столкновение комет с кометами
-        for (int i = 0; i < quantityComet - 1; i++) {
-            Comet comI = cometList.get(i);
-            for (int j = i + 1; j < quantityComet; j++) {
-                Comet comJ = cometList.get(j);
-                if (comI.getPosComet().x + 10 > comJ.getPosComet().x
-                        && comI.getPosComet().y + 10 > comJ.getPosComet().y
-                        && comI.getPosComet().x < comJ.getPosComet().x + 10
-                        && comI.getPosComet().y < comJ.getPosComet().y + 10) {
-                    batch.draw(regionBoom, comJ.getPosComet().x, comJ.getPosComet().y,
-                            50, 50);
-                    comJ.cometStartPosition();
-                    comI.cometStartPosition();
-                }
-            }
-        }
-        batch.end();
-        //Столкновение корабля с кометой
-        for (int i = 0; i < quantityComet; i++) {
-            Comet com = cometList.get(i);
-            if (saucer.getPosSaucer().x + 40 > com.getPosComet().x
-                    && saucer.getPosSaucer().y + 35 > com.getPosComet().y
-                    && saucer.getPosSaucer().x + 10 < com.getPosComet().x + 30
-                    && saucer.getPosSaucer().y + 25 < com.getPosComet().y + 30) {
-                game.setScreen(new History(game, 0, 6));
-            }
-        }
-        //Стартовая область безопасности
-        for (int i = 0; i < quantityComet; i++) {
-            Comet com = cometList.get(i);
-            if (com.getPosComet().x > -30 && com.getPosComet().y > -30
-                    && com.getPosComet().x < 70 && com.getPosComet().y < 70) {
-                com.cometStartPosition();
-            }
-        }
-        if (saucer.getPosSaucer().x > 400
-                && saucer.getPosSaucer().y > 250
-                && saucer.getPosSaucer().x < 580
-                && saucer.getPosSaucer().y < 430) {
-            //Посадка тарелки
-            if (saucer.saucerLanded().equals("LandedComplete"))
-                game.setScreen(new History(game, 2, difficultyLevel));
-
+        if (saucerOnTheMoon) {
+            if (saucer.saucerLanded(moon).equals("LandedComplete"))
+                saucerLandedOnTheMoon = true;
+            else
+                saucer.saucerLandedLuminescence();
+            saucer.draw(batch);
         } else {
-            //Управление тарелкой
+            //Управление тарелкой стрелками
             if (Gdx.input.isKeyPressed(20))
                 saucer.saucerMovePosition("down");
             if (Gdx.input.isKeyPressed(21))
@@ -141,11 +86,104 @@ public class TheRescuePart1Screen extends BaseScreen {
                 saucer.saucerMovePosition("up");
             if (Gdx.input.isKeyPressed(22))
                 saucer.saucerMovePosition("right");
+            //Управление тарелкой стиком
+            saucer.setSaucerSpeed(joyStick.getSpeed());
+            saucer.saucerMovePosition(joyStick.getDirection());
+            saucer.saucerLuminescence();
+            saucer.draw(batch);
         }
-        //Движение комет
+        //Отрисовка Стика
+        if (joyStick.isShowStick()) {
+            joyStick.draw(batch);
+        }
+        //Отрисовка луны
+        moon.draw(batch);
+        //Отрисовка комет
         for (int i = 0; i < quantityComet; i++) {
-            cometList.get(i).cometMovePosition();
+            Comet com = cometList.get(i);
+            com.draw(batch);
+            com.cometMovePosition();
         }
+        //Столкновение комет с луной
+        for (int i = 0; i < quantityComet; i++) {
+            Comet com = cometList.get(i);
+            baseVector.set(com.pos);
+            if (baseVector.sub(moon.pos).len() < 0.18f) {
+                boom.pos.set(com.pos);
+                com.cometStartPosition();
+                boom.draw(batch);
+            }
+        }
+        //Столкновение комет с кометами
+        for (int i = 0; i < quantityComet - 1; i++) {
+            Comet comI = cometList.get(i);
+            baseVector.set(comI.pos);
+            for (int j = i + 1; j < quantityComet; j++) {
+                Comet comJ = cometList.get(j);
+                baseVector2.set(comJ.pos);
+                if (baseVector2.sub(baseVector).len() < 0.03f) {
+                    boom.pos.set(comI.pos);
+                    comI.cometStartPosition();
+                    comJ.cometStartPosition();
+                    boom.draw(batch);
+                }
+            }
+        }
+        batch.end();
+        //Посадка на луну
+        if (moon.pos.cpy().sub(saucer.pos).len() < 0.15f)
+            saucerOnTheMoon = true;
+        //Столкновение корабля с кометой
+        for (int i = 0; i < quantityComet; i++) {
+            Comet com = cometList.get(i);
+            baseVector.set(com.pos);
+            if (baseVector.sub(saucer.pos).len() < 0.03f) {
+                batch.begin();
+                boom.pos.set(saucer.pos);
+                boom.draw(batch);
+                batch.end();
+                game.setScreen(new History(game, 0, 6));
+            }
+        }
+        //Стартовая область безопасности
+        if (saucer.saveZone())
+            for (int i = 0; i < quantityComet; i++) {
+                Comet com = cometList.get(i);
+                com.saveZone();
+            }
+        //Посадка тарелки
+        if (saucerLandedOnTheMoon)
+            game.setScreen(new History(game, 2, difficultyLevel));
+    }
+
+    @Override
+    protected void resize(Rect worldBounds) {
+        saucer.resize(worldBounds);
+        moon.resize(worldBounds);
+        boom.resize(worldBounds);
+        circleSmall.resize(worldBounds);
+        joyStick.resize(worldBounds);
+        for (int i = 0; i < quantityComet; i++) {
+            cometList.get(i).resize(worldBounds);
+        }
+    }
+
+    @Override
+    public boolean touchDown(Vector2 touch, int pointer) {
+        joyStick.touchDown(touch, pointer);
+        return super.touchDown(touch, pointer);
+    }
+
+    @Override
+    public boolean touchUp(Vector2 touch, int pointer) {
+        joyStick.touchUp(touch, pointer);
+        return super.touchUp(touch, pointer);
+    }
+
+    @Override
+    public boolean touchDragged(Vector2 touch, int pointer) {
+        joyStick.touchDragged(touch, pointer);
+        return super.touchDragged(touch, pointer);
     }
 
     @Override

@@ -1,38 +1,36 @@
 package com.avandrinov.stargame.screen;
 
 import com.avandrinov.stargame.base.BaseScreen;
+import com.avandrinov.stargame.math.Rect;
+import com.avandrinov.stargame.sprite.GameOver;
+import com.avandrinov.stargame.sprite.HistoryPart;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 
 public class History extends BaseScreen {
     private int historyPartNumber;
-    private TextureRegion historyPart;
-    private TextureRegion gameOver;
     private int difficultyLevel;
+    private GameOver gameOver;
+    private HistoryPart historyPart;
 
     History(Game game, int historyPartNumber, int difficultyLevel) {
         super(game);
         this.historyPartNumber = historyPartNumber;
         this.difficultyLevel = difficultyLevel;
+        gameOver = new GameOver();
+        historyPart = new HistoryPart();
     }
+
 
     @Override
     public void show() {
-        switch (historyPartNumber) {
-            case 0:
-                gameOver = new TextureRegion(new Texture("saucerCrashed.png"));
-                break;
-            case 1:
-                historyPart = new TextureRegion(new Texture("historyPart1.png"));
-                break;
-            case 2:
-                historyPart = new TextureRegion(new Texture("historyPart2.png"));
-                break;
-        }
+        if (historyPartNumber > 0)
+            historyPart.chosePart(historyPartNumber);
     }
 
     @Override
@@ -42,9 +40,10 @@ public class History extends BaseScreen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         if (historyPartNumber == 0)
-            batch.draw(gameOver, 60, -10);
+            gameOver.draw(batch);
+
         else
-            batch.draw(historyPart, 60, -30);
+            historyPart.draw(batch);
         batch.end();
     }
 
@@ -68,10 +67,22 @@ public class History extends BaseScreen {
     }
 
     @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+    public boolean touchDown(Vector2 touch, int pointer) {
         switch (historyPartNumber) {
             case 0:
-                game.setScreen(new TheRescuePart1Screen(game, difficultyLevel));
+                game.setScreen(new MenuScreen(game));
+                break;
+            case 1:
+                break;
+            case 2:
+        }
+        return super.touchDown(touch, pointer);
+    }
+
+    @Override
+    public boolean touchUp(Vector2 touch, int pointer) {
+        switch (historyPartNumber) {
+            case 0:
                 break;
             case 1:
                 game.setScreen(new TheRescuePart1Screen(game, difficultyLevel));
@@ -79,7 +90,13 @@ public class History extends BaseScreen {
             case 2:
                 game.setScreen(new BoardOfTheShipPart2Screen(game));
         }
-        return super.touchDown(screenX, screenY, pointer, button);
+        return super.touchUp(touch, pointer);
+    }
+
+    @Override
+    public void resize(Rect worldBounds) {
+        gameOver.resize(worldBounds);
+        historyPart.resize(worldBounds);
     }
 
     @Override
