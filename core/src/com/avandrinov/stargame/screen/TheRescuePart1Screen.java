@@ -10,6 +10,7 @@ import com.avandrinov.stargame.sprite.CircleSmall;
 import com.avandrinov.stargame.sprite.JoyStick;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -32,16 +33,19 @@ public class TheRescuePart1Screen extends BaseScreen {
     private TextureRegion regionComet;
     private TextureAtlas atlasComet;
     private JoyStick joyStick;
+    private Sound sound;
 
     TheRescuePart1Screen(Game game, int difficultyLevel) {
         super(game);
         this.difficultyLevel = difficultyLevel;
         quantityComet = quantityComet * difficultyLevel;
+
     }
 
     @Override
     public void show() {
         super.show();
+        sound = Gdx.audio.newSound(Gdx.files.internal("sounds/openSpace.mp3"));
         cometList = new ArrayList<Comet>();
         joyStick = new JoyStick();
         circleSmall = new CircleSmall();
@@ -55,6 +59,8 @@ public class TheRescuePart1Screen extends BaseScreen {
         for (int i = 0; i < quantityComet; i++) {
             cometList.add(new Comet(regionComet));
         }
+        sound.play(0.1f);
+
     }
 
     private void loadTextures() {
@@ -159,13 +165,22 @@ public class TheRescuePart1Screen extends BaseScreen {
             cometList.get(i).resize(worldBounds);
         }
     }
+
     public void update(float delta) {
+        float f = joyStick.getTouchJoyStick();
+        if (joyStick.isShowStick()){
+            if (f != 0)
+                saucer.soundStart();
+            else
+                saucer.soundStop();
+    }
 //        for (int i = 0; i < star.length; i++) {
 //            star[i].update(delta);
 //        }
         saucer.update(delta);
 //        bulletPool.updateActiveObjects(delta);
-    }
+}
+
     @Override
     public boolean touchDown(Vector2 touch, int pointer) {
         joyStick.touchDown(touch, pointer);
@@ -174,6 +189,7 @@ public class TheRescuePart1Screen extends BaseScreen {
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer) {
+        saucer.soundStop();
         joyStick.touchUp(touch, pointer);
         return super.touchUp(touch, pointer);
     }
@@ -198,6 +214,7 @@ public class TheRescuePart1Screen extends BaseScreen {
 
     @Override
     public void dispose() {
+        sound.dispose();
         super.dispose();
     }
 }

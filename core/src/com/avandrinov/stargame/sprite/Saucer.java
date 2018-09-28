@@ -1,11 +1,14 @@
 package com.avandrinov.stargame.sprite;
 
 import com.avandrinov.stargame.base.ActionListener;
+import com.avandrinov.stargame.base.AnalogStick;
 import com.avandrinov.stargame.base.Button;
 import com.avandrinov.stargame.base.Sprite;
 import com.avandrinov.stargame.math.Rect;
+import com.avandrinov.stargame.sounds.SaucerFly;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -38,6 +41,10 @@ public class Saucer extends Button {
     private Vector2 upVector;
     private Vector2 downVector;
     private Vector2 landedMenu;
+    private Sound sound;
+    long id;
+    private boolean isPlaying;
+    private SaucerFly saucerFly;
 
     public Saucer() {
         buf = new Vector2(0f, 0f);
@@ -47,6 +54,7 @@ public class Saucer extends Button {
         upVector = new Vector2(0f, saucerSpeedArrows);
         downVector = new Vector2(0f, saucerSpeedArrows * -1);
         worldBounds = new Rect();
+        saucerFly = new SaucerFly();
         atlas = new TextureAtlas("textures/saucerPack.txt");
         listSaucerLuminescence = new ArrayList<TextureRegion>();
         listSaucerLandedLuminescence = new ArrayList<TextureRegion>();
@@ -60,6 +68,7 @@ public class Saucer extends Button {
                             atlas.findRegion(
                                     "saucerLuminescence" + i)));
         }
+        sound = Gdx.audio.newSound(Gdx.files.internal("sounds/saucerFly.ogg"));
         sprite(listSaucerLuminescence, listSaucerLandedLuminescence);
     }
 
@@ -80,7 +89,7 @@ public class Saucer extends Button {
                                     "saucerLuminescence" + i)));
         }
         x = -0.67f;
-        y = -0.1f;
+        y = -0.6f;
         sprite(listSaucerDifficultyLevel, listSaucerLuminescence);
         setQuantityFrame(4);
         frame = 4;
@@ -94,6 +103,18 @@ public class Saucer extends Button {
         if (menu)
             setLeft(worldBounds.getLeft() + worldBounds.getHalfWidth() - 0.17f);
         this.worldBounds.set(worldBounds);
+    }
+
+    public void soundStart() {
+        if (!isPlaying) {
+            isPlaying = true;
+            sound.play(0.01f);
+        }
+    }
+
+    public void soundStop() {
+        sound.stop();
+        isPlaying = false;
     }
 
     public String saucerLanded(Moon moon) {
@@ -123,17 +144,17 @@ public class Saucer extends Button {
         return difficultyLevel;
     }
 
-//    public void saucerLandedMenu() {
-//        if (frame > 3) {
-//            if (pos.y > 0.1f) {
-//                saucerLandedLuminescence();
-//                pos.add(0, -0.01f);
-//            } else {
-//                frame = 3;
-//            }
-//        }
-//        difficultyLevel = frame + 1;
-//    }
+    public void saucerLandedMenu() {
+        if (frame > 3) {
+            if (pos.y > 0.1f) {
+                saucerLandedLuminescence();
+                pos.add(0, -0.01f);
+            } else {
+                frame = 3;
+            }
+        }
+        difficultyLevel = frame + 1;
+    }
 
     public void saucerMovePosition(Vector2 direction) {
         pos.add(direction);
@@ -155,6 +176,7 @@ public class Saucer extends Button {
 
     @Override
     public boolean keyDown(int keycode) {
+        soundStart();
         switch (keycode) {
             case Input.Keys.UP:
                 up = true;
@@ -186,6 +208,9 @@ public class Saucer extends Button {
                 right = false;
 
         }
+        if (!up && !down && !left && !right)
+            soundStop();
+
         return super.keyDown(keycode);
     }
 
@@ -219,4 +244,5 @@ public class Saucer extends Button {
             return true;
         return false;
     }
+
 }

@@ -8,9 +8,9 @@ import com.avandrinov.stargame.StarGameExample;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-//		config.resizable = false;
-//		config.height = 512;
-//		config.width = 1024;
+		config.resizable = false;
+		config.height = 512;
+		config.width = 1024;
 		new LwjglApplication(new StarGame(), config);
 	}
 }

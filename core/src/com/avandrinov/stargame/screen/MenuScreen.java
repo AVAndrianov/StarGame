@@ -9,6 +9,7 @@ import com.avandrinov.stargame.sprite.ButtonStart;
 import com.avandrinov.stargame.sprite.Saucer;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 public class MenuScreen extends BaseScreen implements ActionListener {
     private ButtonStart buttonStart;
     private Saucer saucer;
+    private Sound sound;
 
     public MenuScreen(Game game) {
         super(game);
@@ -30,8 +32,10 @@ public class MenuScreen extends BaseScreen implements ActionListener {
     @Override
     public void show() {
         super.show();
+        sound = Gdx.audio.newSound(Gdx.files.internal("sounds/menu.mp3"));
         saucer = new Saucer(3,this);
         buttonStart = new ButtonStart();
+        sound.play(0.05f);
     }
 
     @Override
@@ -41,9 +45,10 @@ public class MenuScreen extends BaseScreen implements ActionListener {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         update(delta);
         batch.begin();
+//        saucer.saucerLandedMenu();
         saucer.draw(batch);
         buttonStart.draw(batch);
-//        saucer.saucerLandedMenu();
+        saucer.saucerLandedMenu();
 
         batch.end();
     }
@@ -89,6 +94,7 @@ public class MenuScreen extends BaseScreen implements ActionListener {
     @Override
     public void dispose() {
         super.dispose();
+        sound.dispose();
     }
 
     @Override

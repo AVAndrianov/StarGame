@@ -1,6 +1,8 @@
 package com.avandrinov.stargame.base;
 
 import com.avandrinov.stargame.base.Sprite;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 
 public class AnalogStick extends Sprite {
@@ -28,6 +30,7 @@ public class AnalogStick extends Sprite {
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer) {
+        touchJoyStick = 0;
         direction.set(0,0);
         showStick = false;
         up = false;
@@ -61,4 +64,7 @@ public class AnalogStick extends Sprite {
         return direction;
     }
 
+    public float getTouchJoyStick() {
+        return touchJoyStick;
+    }
 }

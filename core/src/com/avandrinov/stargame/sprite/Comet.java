@@ -37,11 +37,12 @@ public class Comet extends Sprite {
     public void resize(Rect worldBounds) {
         setHeightProportion(worldBounds.getHeight() / 15);
         this.worldBounds = worldBounds;
-        pos.set(worldBounds.pos).sub(
-                worldBounds.getHalfWidth() * Rnd.nextFloat(-1f, 1f),
-                Rnd.nextFloat(-0.5f, 0.5f));
-        moveX = Rnd.nextFloat(-1.1f, 1.1f);
-        moveY = Rnd.nextFloat(-0.6f, 0.6f);
+//        pos.set(0,0);
+//        pos.set(worldBounds.pos).sub(
+//                worldBounds.getHalfWidth() * Rnd.nextFloat(-0.5f, 0.5f),
+//                Rnd.nextFloat(-0.3f, 0.3f));
+        moveX = Rnd.nextFloat(worldBounds.getHalfWidth()*-1+0.2f, worldBounds.getWidth());
+        moveY = Rnd.nextFloat(worldBounds.getHalfHeight()*-1+0.2f, worldBounds.getHeight());
         cometStartPosition();
     }
 
