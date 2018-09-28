@@ -68,6 +68,7 @@ public class TheRescuePart1Screen extends BaseScreen {
         super.render(delta);
         Gdx.gl.glClearColor(1, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        update(delta);
         batch.begin();
         //Отрисовка тарелки
         if (saucerOnTheMoon) {
@@ -77,15 +78,6 @@ public class TheRescuePart1Screen extends BaseScreen {
                 saucer.saucerLandedLuminescence();
             saucer.draw(batch);
         } else {
-            //Управление тарелкой стрелками
-            if (Gdx.input.isKeyPressed(20))
-                saucer.saucerMovePosition("down");
-            if (Gdx.input.isKeyPressed(21))
-                saucer.saucerMovePosition("left");
-            if (Gdx.input.isKeyPressed(19))
-                saucer.saucerMovePosition("up");
-            if (Gdx.input.isKeyPressed(22))
-                saucer.saucerMovePosition("right");
             //Управление тарелкой стиком
             saucer.setSaucerSpeed(joyStick.getSpeed());
             saucer.saucerMovePosition(joyStick.getDirection());
@@ -167,7 +159,13 @@ public class TheRescuePart1Screen extends BaseScreen {
             cometList.get(i).resize(worldBounds);
         }
     }
-
+    public void update(float delta) {
+//        for (int i = 0; i < star.length; i++) {
+//            star[i].update(delta);
+//        }
+        saucer.update(delta);
+//        bulletPool.updateActiveObjects(delta);
+    }
     @Override
     public boolean touchDown(Vector2 touch, int pointer) {
         joyStick.touchDown(touch, pointer);
@@ -184,6 +182,18 @@ public class TheRescuePart1Screen extends BaseScreen {
     public boolean touchDragged(Vector2 touch, int pointer) {
         joyStick.touchDragged(touch, pointer);
         return super.touchDragged(touch, pointer);
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        saucer.keyDown(keycode);
+        return super.keyDown(keycode);
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        saucer.keyUp(keycode);
+        return super.keyUp(keycode);
     }
 
     @Override

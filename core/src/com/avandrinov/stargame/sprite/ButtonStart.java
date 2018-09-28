@@ -1,5 +1,6 @@
 package com.avandrinov.stargame.sprite;
 
+import com.avandrinov.stargame.base.ActionListener;
 import com.avandrinov.stargame.base.Button;
 import com.avandrinov.stargame.base.Sprite;
 import com.avandrinov.stargame.math.Rect;
@@ -17,6 +18,19 @@ public class ButtonStart extends Button {
     private boolean pressed;
     private int pointer;
 
+    public ButtonStart(TextureAtlas atlas, ActionListener actionListener) {
+        super(atlas.findRegion("start"),actionListener);
+        buttonStartList = new ArrayList<TextureRegion>();
+        atlas = new TextureAtlas("textures/otherPack.txt");
+        buttonStartList.add(
+                new TextureRegion(
+                        atlas.findRegion("start")));
+        buttonStartList.add(
+                new TextureRegion(
+                        atlas.findRegion("startPush")));
+
+        sprite(buttonStartList);
+    }
     public ButtonStart() {
         buttonStartList = new ArrayList<TextureRegion>();
         atlas = new TextureAtlas("textures/otherPack.txt");

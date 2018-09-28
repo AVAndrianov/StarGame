@@ -1,5 +1,6 @@
 package com.avandrinov.stargame.screen;
 
+import com.avandrinov.stargame.base.ActionListener;
 import com.avandrinov.stargame.base.BaseScreen;
 import com.avandrinov.stargame.base.Sprite;
 import com.avandrinov.stargame.math.MatrixUtils;
@@ -18,9 +19,8 @@ import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 
-public class MenuScreen extends BaseScreen {
+public class MenuScreen extends BaseScreen implements ActionListener {
     private ButtonStart buttonStart;
-    private TextureAtlas atlas;
     private Saucer saucer;
 
     public MenuScreen(Game game) {
@@ -30,8 +30,7 @@ public class MenuScreen extends BaseScreen {
     @Override
     public void show() {
         super.show();
-        atlas = new TextureAtlas("textures/saucerPack.txt");
-        saucer = new Saucer(3, 0.9f, -0.6f);
+        saucer = new Saucer(3,this);
         buttonStart = new ButtonStart();
     }
 
@@ -40,15 +39,23 @@ public class MenuScreen extends BaseScreen {
         super.render(delta);
         Gdx.gl.glClearColor(1, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        update(delta);
         batch.begin();
         saucer.draw(batch);
-        saucer.saucerLandedMenu();
         buttonStart.draw(batch);
+//        saucer.saucerLandedMenu();
+
         batch.end();
     }
-
+    public void update(float delta) {
+//        for (int i = 0; i < star.length; i++) {
+//            star[i].update(delta);
+//        }
+        saucer.update(delta);
+//        bulletPool.updateActiveObjects(delta);
+    }
     @Override
-    protected void resize(Rect worldBounds) {
+    public void resize(Rect worldBounds) {
         saucer.resize(worldBounds);
         buttonStart.resize(worldBounds);
     }
@@ -82,5 +89,10 @@ public class MenuScreen extends BaseScreen {
     @Override
     public void dispose() {
         super.dispose();
+    }
+
+    @Override
+    public void actionPerformed(Object src) {
+
     }
 }

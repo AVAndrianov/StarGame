@@ -1,9 +1,11 @@
 package com.avandrinov.stargame.sprite;
 
+import com.avandrinov.stargame.base.ActionListener;
 import com.avandrinov.stargame.base.Button;
 import com.avandrinov.stargame.base.Sprite;
 import com.avandrinov.stargame.math.Rect;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -13,11 +15,12 @@ import java.util.ArrayList;
 
 public class Saucer extends Button {
     private float saucerSpeed = 0.005f;
-    private float saucerSpeedArrows = 0.005f;
+    private float saucerSpeedArrows = 0.3f;
     private Vector2 buf;
     private Vector2 buf2;
+    private int rotate;
     private float size = 10f;
-    private float x = 0.1f;
+    private float x = -0.1f;
     private float y = 0.42f;
     private TextureAtlas atlas;
     private ArrayList<TextureRegion> listSaucerLuminescence;
@@ -25,11 +28,24 @@ public class Saucer extends Button {
     private ArrayList<TextureRegion> listSaucerDifficultyLevel;
     private Rect worldBounds;
     private int difficultyLevel = 4;
-
+    private boolean menu;
+    private boolean up;
+    private boolean down;
+    private boolean left;
+    private boolean right;
+    private Vector2 leftVector;
+    private Vector2 rightVector;
+    private Vector2 upVector;
+    private Vector2 downVector;
+    private Vector2 landedMenu;
 
     public Saucer() {
         buf = new Vector2(0f, 0f);
         buf2 = new Vector2(0f, 0f);
+        leftVector = new Vector2(saucerSpeedArrows * -1f, 0f);
+        rightVector = new Vector2(saucerSpeedArrows, 0f);
+        upVector = new Vector2(0f, saucerSpeedArrows);
+        downVector = new Vector2(0f, saucerSpeedArrows * -1);
         worldBounds = new Rect();
         atlas = new TextureAtlas("textures/saucerPack.txt");
         listSaucerLuminescence = new ArrayList<TextureRegion>();
@@ -43,18 +59,15 @@ public class Saucer extends Button {
                     new TextureRegion(
                             atlas.findRegion(
                                     "saucerLuminescence" + i)));
-
         }
         sprite(listSaucerLuminescence, listSaucerLandedLuminescence);
     }
 
-    public Saucer(float size, float x, float y) {
+    public Saucer(float size, ActionListener actionListener) {
+        menu = true;
         this.size = size;
-        this.x = x;
-        this.y = y;
-        buf = new Vector2(0f, 0f);
-        buf2 = new Vector2(0f, 0f);
         worldBounds = new Rect();
+        landedMenu = new Vector2(0, -0.01f);
         atlas = new TextureAtlas("textures/saucerPack.txt");
         listSaucerDifficultyLevel = new ArrayList<TextureRegion>();
         listSaucerLuminescence = new ArrayList<TextureRegion>();
@@ -66,6 +79,8 @@ public class Saucer extends Button {
                             atlas.findRegion(
                                     "saucerLuminescence" + i)));
         }
+        x = -0.67f;
+        y = -0.1f;
         sprite(listSaucerDifficultyLevel, listSaucerLuminescence);
         setQuantityFrame(4);
         frame = 4;
@@ -75,15 +90,20 @@ public class Saucer extends Button {
     @Override
     public void resize(Rect worldBounds) {
         setHeightProportion(worldBounds.getHeight() / size);
-        pos.set(worldBounds.pos).sub(worldBounds.getHalfWidth() - x, y);
+        pos.set(worldBounds.pos).sub(worldBounds.getHalfWidth() + x, y);
+        if (menu)
+            setLeft(worldBounds.getLeft() + worldBounds.getHalfWidth() - 0.17f);
         this.worldBounds.set(worldBounds);
     }
 
     public String saucerLanded(Moon moon) {
+        left = false;
+        right = false;
+        up = false;
+        down = false;
         if (buf.equals(buf2)) {
             buf.set(moon.pos.cpy().sub(pos).setLength(0.001f));
         }
-        System.out.println(moon.pos.cpy().sub(pos).len());
         if (moon.pos.cpy().sub(pos).len() > 0.005f)
             pos.add(buf);
         else
@@ -99,33 +119,21 @@ public class Saucer extends Button {
         this.saucerSpeed = saucerSpeed;
     }
 
-    public void saucerMovePosition(String direction) {
-        if (direction.equals("left"))
-            pos.add(saucerSpeedArrows * -1, 0f);
-        if (direction.equals("right"))
-            pos.add(saucerSpeedArrows, 0f);
-        if (direction.equals("up"))
-            pos.add(0f, saucerSpeedArrows);
-        if (direction.equals("down"))
-            pos.add(0f, saucerSpeedArrows * -1);
-    }
-
     public int getDifficultyLevel() {
         return difficultyLevel;
     }
 
-    public void saucerLandedMenu() {
-        if (frame > 3) {
-            if (pos.y > 0.1f) {
-                saucerLandedLuminescence();
-                pos.add(0, -0.01f);
-            } else {
-                frame = 3;
-            }
-        }
-        difficultyLevel = frame + 1;
-
-    }
+//    public void saucerLandedMenu() {
+//        if (frame > 3) {
+//            if (pos.y > 0.1f) {
+//                saucerLandedLuminescence();
+//                pos.add(0, -0.01f);
+//            } else {
+//                frame = 3;
+//            }
+//        }
+//        difficultyLevel = frame + 1;
+//    }
 
     public void saucerMovePosition(Vector2 direction) {
         pos.add(direction);
@@ -143,6 +151,67 @@ public class Saucer extends Button {
             frame = 0;
         else
             frame++;
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        switch (keycode) {
+            case Input.Keys.UP:
+                up = true;
+                break;
+            case Input.Keys.DOWN:
+                down = true;
+                break;
+            case Input.Keys.LEFT:
+                left = true;
+                break;
+            case Input.Keys.RIGHT:
+                right = true;
+        }
+        return super.keyDown(keycode);
+    }
+
+    public boolean keyUp(int keycode) {
+        switch (keycode) {
+            case Input.Keys.UP:
+                up = false;
+                break;
+            case Input.Keys.DOWN:
+                down = false;
+                break;
+            case Input.Keys.LEFT:
+                left = false;
+                break;
+            case Input.Keys.RIGHT:
+                right = false;
+
+        }
+        return super.keyDown(keycode);
+    }
+
+    @Override
+    public void update(float delta) {
+        if (size == 3) {
+            if (frame > 3) {
+                if (pos.y > 0.1f) {
+                    saucerLandedLuminescence();
+                    pos.mulAdd(landedMenu, delta);
+                } else {
+                    frame = 3;
+                }
+            }
+            difficultyLevel = frame + 1;
+        } else {
+            if (left)
+                pos.mulAdd(leftVector, delta);
+            if (right)
+                pos.mulAdd(rightVector, delta);
+            if (up)
+                pos.mulAdd(upVector, delta);
+            if (down)
+                pos.mulAdd(downVector, delta);
+        }
+        super.update(delta);
     }
 
     public boolean saveZone() {

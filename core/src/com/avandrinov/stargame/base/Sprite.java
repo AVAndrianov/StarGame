@@ -102,6 +102,9 @@ public class Sprite extends Rect {
     public boolean touchDragged(Vector2 touch, int pointer) {
         return false;
     }
+    public boolean keyDown(int keycode) {
+        return false;
+    }
 
     public void draw(SpriteBatch batch) {
         batch.draw(

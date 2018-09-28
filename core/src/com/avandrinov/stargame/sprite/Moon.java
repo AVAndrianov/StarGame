@@ -16,6 +16,7 @@ public class Moon extends Sprite {
         moon = new TextureRegion(
                 atlas.findRegion("moon"));
         sprite(moon);
+
     }
 
     public void resize(Rect worldBounds) {
