@@ -59,7 +59,7 @@ public class TheRescuePart1Screen extends BaseScreen {
         for (int i = 0; i < quantityComet; i++) {
             cometList.add(new Comet(regionComet));
         }
-        sound.play(0.1f);
+        sound.play(0.3f);
 
     }
 

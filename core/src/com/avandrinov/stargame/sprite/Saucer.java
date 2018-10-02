@@ -106,13 +106,15 @@ public class Saucer extends Button {
     }
 
     public void soundStart() {
+        saucerFly.startMusic();
         if (!isPlaying) {
             isPlaying = true;
-            sound.play(0.01f);
+            sound.play(0.8f);
         }
     }
 
     public void soundStop() {
+        saucerFly.stopMusic();
         sound.stop();
         isPlaying = false;
     }
@@ -244,5 +246,4 @@ public class Saucer extends Button {
             return true;
         return false;
     }
-
 }
