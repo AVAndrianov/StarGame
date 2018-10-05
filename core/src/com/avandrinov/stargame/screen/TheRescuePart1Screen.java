@@ -1,6 +1,7 @@
 package com.avandrinov.stargame.screen;
 
 import com.avandrinov.stargame.math.Rect;
+import com.avandrinov.stargame.pool.BulletPool;
 import com.avandrinov.stargame.sprite.Boom;
 import com.avandrinov.stargame.sprite.Comet;
 import com.avandrinov.stargame.sprite.Moon;
@@ -34,12 +35,12 @@ public class TheRescuePart1Screen extends BaseScreen {
     private TextureAtlas atlasComet;
     private JoyStick joyStick;
     private Sound sound;
+    private BulletPool bulletPool;
 
     TheRescuePart1Screen(Game game, int difficultyLevel) {
         super(game);
         this.difficultyLevel = difficultyLevel;
         quantityComet = quantityComet * difficultyLevel;
-
     }
 
     @Override
@@ -50,7 +51,6 @@ public class TheRescuePart1Screen extends BaseScreen {
         joyStick = new JoyStick();
         circleSmall = new CircleSmall();
         joyStick = new JoyStick();
-        saucer = new Saucer();
         moon = new Moon();
         boom = new Boom();
         baseVector2 = new Vector2();
@@ -60,6 +60,9 @@ public class TheRescuePart1Screen extends BaseScreen {
             cometList.add(new Comet(regionComet));
         }
         sound.play(0.3f);
+        bulletPool = new BulletPool();
+        saucer = new Saucer(bulletPool, new TextureAtlas("textures/bulletPack.txt"));
+
 
     }
 
@@ -127,6 +130,7 @@ public class TheRescuePart1Screen extends BaseScreen {
                 }
             }
         }
+        bulletPool.drawActiveObject(batch);
         batch.end();
         //Посадка на луну
         if (moon.pos.cpy().sub(saucer.pos).len() < 0.15f)
@@ -166,20 +170,25 @@ public class TheRescuePart1Screen extends BaseScreen {
         }
     }
 
+    public void deleteAllDestroyed() {
+        bulletPool.freeAllDestroyedActiveObject();
+    }
+
     public void update(float delta) {
         float f = joyStick.getTouchJoyStick();
-        if (joyStick.isShowStick()){
+        if (joyStick.isShowStick()) {
             if (f != 0)
                 saucer.soundStart();
             else
                 saucer.soundStop();
-    }
+        }
 //        for (int i = 0; i < star.length; i++) {
 //            star[i].update(delta);
 //        }
         saucer.update(delta);
 //        bulletPool.updateActiveObjects(delta);
-}
+        bulletPool.updateActiveObject(delta);
+    }
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer) {
@@ -215,6 +224,7 @@ public class TheRescuePart1Screen extends BaseScreen {
     @Override
     public void dispose() {
         sound.dispose();
+        bulletPool.dispose();
         super.dispose();
     }
 }

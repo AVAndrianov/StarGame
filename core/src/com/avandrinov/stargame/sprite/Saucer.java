@@ -1,22 +1,19 @@
 package com.avandrinov.stargame.sprite;
 
-import com.avandrinov.stargame.base.ActionListener;
-import com.avandrinov.stargame.base.AnalogStick;
-import com.avandrinov.stargame.base.Button;
-import com.avandrinov.stargame.base.Sprite;
+import com.avandrinov.stargame.base.Ship;
 import com.avandrinov.stargame.math.Rect;
+import com.avandrinov.stargame.pool.BulletPool;
 import com.avandrinov.stargame.sounds.SaucerFly;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 
-public class Saucer extends Button {
+public class Saucer extends Ship {
     private float saucerSpeed = 0.005f;
     private float saucerSpeedArrows = 0.3f;
     private Vector2 buf;
@@ -28,10 +25,9 @@ public class Saucer extends Button {
     private TextureAtlas atlas;
     private ArrayList<TextureRegion> listSaucerLuminescence;
     private ArrayList<TextureRegion> listSaucerLandedLuminescence;
-    private ArrayList<TextureRegion> listSaucerDifficultyLevel;
     private Rect worldBounds;
+    private TextureRegion bulletRegion;
     private int difficultyLevel = 4;
-    private boolean menu;
     private boolean up;
     private boolean down;
     private boolean left;
@@ -40,13 +36,16 @@ public class Saucer extends Button {
     private Vector2 rightVector;
     private Vector2 upVector;
     private Vector2 downVector;
-    private Vector2 landedMenu;
     private Sound sound;
     long id;
     private boolean isPlaying;
     private SaucerFly saucerFly;
+    private BulletPool bulletPool;
+    private Vector2 bulletV = new Vector2(0, 0.5f);
 
-    public Saucer() {
+    public Saucer(BulletPool bulletPool, TextureAtlas atlas) {
+        super(atlas.findRegion("bullet"), 1, 2, 2, bulletPool);
+        this.bulletPool = bulletPool;
         buf = new Vector2(0f, 0f);
         buf2 = new Vector2(0f, 0f);
         leftVector = new Vector2(saucerSpeedArrows * -1f, 0f);
@@ -55,7 +54,7 @@ public class Saucer extends Button {
         downVector = new Vector2(0f, saucerSpeedArrows * -1);
         worldBounds = new Rect();
         saucerFly = new SaucerFly();
-        atlas = new TextureAtlas("textures/saucerPack.txt");
+            atlas = new TextureAtlas("textures/saucerPack.txt");
         listSaucerLuminescence = new ArrayList<TextureRegion>();
         listSaucerLandedLuminescence = new ArrayList<TextureRegion>();
         for (int i = 1; i <= 4; i++) {
@@ -68,31 +67,9 @@ public class Saucer extends Button {
                             atlas.findRegion(
                                     "saucerLuminescence" + i)));
         }
-        sound = Gdx.audio.newSound(Gdx.files.internal("sounds/saucerFly.ogg"));
-        sprite(listSaucerLuminescence, listSaucerLandedLuminescence);
-    }
+        bulletRegion = atlas.findRegion("saucerDifficultyLevel4");
 
-    public Saucer(float size, ActionListener actionListener) {
-        menu = true;
-        this.size = size;
-        worldBounds = new Rect();
-        landedMenu = new Vector2(0, -0.01f);
-        atlas = new TextureAtlas("textures/saucerPack.txt");
-        listSaucerDifficultyLevel = new ArrayList<TextureRegion>();
-        listSaucerLuminescence = new ArrayList<TextureRegion>();
-        for (int i = 1; i <= 4; i++) {
-            listSaucerDifficultyLevel.add(new TextureRegion(
-                    atlas.findRegion("saucerDifficultyLevel" + i)));
-            listSaucerLuminescence.add(
-                    new TextureRegion(
-                            atlas.findRegion(
-                                    "saucerLuminescence" + i)));
-        }
-        x = -0.67f;
-        y = -0.6f;
-        sprite(listSaucerDifficultyLevel, listSaucerLuminescence);
-        setQuantityFrame(4);
-        frame = 4;
+        sprite(listSaucerLuminescence, listSaucerLandedLuminescence);
 
     }
 
@@ -100,8 +77,6 @@ public class Saucer extends Button {
     public void resize(Rect worldBounds) {
         setHeightProportion(worldBounds.getHeight() / size);
         pos.set(worldBounds.pos).sub(worldBounds.getHalfWidth() + x, y);
-        if (menu)
-            setLeft(worldBounds.getLeft() + worldBounds.getHalfWidth() - 0.17f);
         this.worldBounds.set(worldBounds);
     }
 
@@ -109,13 +84,13 @@ public class Saucer extends Button {
         saucerFly.startMusic();
         if (!isPlaying) {
             isPlaying = true;
-            sound.play(0.8f);
+//            sound.play(0.1f);
         }
     }
 
     public void soundStop() {
         saucerFly.stopMusic();
-        sound.stop();
+//        sound.stop();
         isPlaying = false;
     }
 
@@ -140,22 +115,6 @@ public class Saucer extends Button {
 
     public void setSaucerSpeed(float saucerSpeed) {
         this.saucerSpeed = saucerSpeed;
-    }
-
-    public int getDifficultyLevel() {
-        return difficultyLevel;
-    }
-
-    public void saucerLandedMenu() {
-        if (frame > 3) {
-            if (pos.y > 0.1f) {
-                saucerLandedLuminescence();
-                pos.add(0, -0.01f);
-            } else {
-                frame = 3;
-            }
-        }
-        difficultyLevel = frame + 1;
     }
 
     public void saucerMovePosition(Vector2 direction) {
@@ -191,11 +150,13 @@ public class Saucer extends Button {
                 break;
             case Input.Keys.RIGHT:
                 right = true;
+            case Input.Keys.A:
+                saucerShot();
         }
         return super.keyDown(keycode);
     }
 
-    public boolean keyUp(int keycode) {
+    public void keyUp(int keycode) {
         switch (keycode) {
             case Input.Keys.UP:
                 up = false;
@@ -213,31 +174,19 @@ public class Saucer extends Button {
         if (!up && !down && !left && !right)
             soundStop();
 
-        return super.keyDown(keycode);
+        super.keyDown(keycode);
     }
 
     @Override
     public void update(float delta) {
-        if (size == 3) {
-            if (frame > 3) {
-                if (pos.y > 0.1f) {
-                    saucerLandedLuminescence();
-                    pos.mulAdd(landedMenu, delta);
-                } else {
-                    frame = 3;
-                }
-            }
-            difficultyLevel = frame + 1;
-        } else {
-            if (left)
-                pos.mulAdd(leftVector, delta);
-            if (right)
-                pos.mulAdd(rightVector, delta);
-            if (up)
-                pos.mulAdd(upVector, delta);
-            if (down)
-                pos.mulAdd(downVector, delta);
-        }
+        if (left)
+            pos.mulAdd(leftVector, delta);
+        if (right)
+            pos.mulAdd(rightVector, delta);
+        if (up)
+            pos.mulAdd(upVector, delta);
+        if (down)
+            pos.mulAdd(downVector, delta);
         super.update(delta);
     }
 
@@ -245,5 +194,11 @@ public class Saucer extends Button {
         if (pos.x < worldBounds.getHalfWidth() * -1 + 0.3f && pos.y < -0.3f)
             return true;
         return false;
+    }
+
+    public void saucerShot() {
+        Bullet bullet = bulletPool.obtain();
+        bullet.set(this, bulletRegion, pos, bulletV, 0.03f, worldBounds,1);
+
     }
 }

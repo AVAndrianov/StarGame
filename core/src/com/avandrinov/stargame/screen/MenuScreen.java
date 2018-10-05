@@ -5,6 +5,7 @@ import com.avandrinov.stargame.base.BaseScreen;
 import com.avandrinov.stargame.base.Sprite;
 import com.avandrinov.stargame.math.MatrixUtils;
 import com.avandrinov.stargame.math.Rect;
+import com.avandrinov.stargame.sprite.ButtonSaucer;
 import com.avandrinov.stargame.sprite.ButtonStart;
 import com.avandrinov.stargame.sprite.Saucer;
 import com.badlogic.gdx.Game;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 
 public class MenuScreen extends BaseScreen implements ActionListener {
     private ButtonStart buttonStart;
-    private Saucer saucer;
+    private ButtonSaucer buttonSaucer;
     private Sound sound;
 
     public MenuScreen(Game game) {
@@ -33,7 +34,7 @@ public class MenuScreen extends BaseScreen implements ActionListener {
     public void show() {
         super.show();
         sound = Gdx.audio.newSound(Gdx.files.internal("sounds/menu.mp3"));
-        saucer = new Saucer(3,this);
+        buttonSaucer = new ButtonSaucer(3,this);
         buttonStart = new ButtonStart();
         sound.play(0.05f);
     }
@@ -46,9 +47,9 @@ public class MenuScreen extends BaseScreen implements ActionListener {
         update(delta);
         batch.begin();
 //        saucer.saucerLandedMenu();
-        saucer.draw(batch);
+        buttonSaucer.draw(batch);
         buttonStart.draw(batch);
-        saucer.saucerLandedMenu();
+        buttonSaucer.saucerLandedMenu();
 
         batch.end();
     }
@@ -56,25 +57,25 @@ public class MenuScreen extends BaseScreen implements ActionListener {
 //        for (int i = 0; i < star.length; i++) {
 //            star[i].update(delta);
 //        }
-        saucer.update(delta);
+        buttonSaucer.update(delta);
 //        bulletPool.updateActiveObjects(delta);
     }
     @Override
     public void resize(Rect worldBounds) {
-        saucer.resize(worldBounds);
+        buttonSaucer.resize(worldBounds);
         buttonStart.resize(worldBounds);
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer) {
         if (buttonStart.touchUp(touch, pointer))
-            game.setScreen(new History(game, 1,saucer.getDifficultyLevel()));
+            game.setScreen(new History(game, 1,buttonSaucer.getDifficultyLevel()));
         return super.touchUp(touch, pointer);
     }
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer) {
-        saucer.touchDown(touch,pointer);
+        buttonSaucer.touchDown(touch,pointer);
         buttonStart.touchDown(touch, pointer);
         return super.touchDown(touch, pointer);
     }
