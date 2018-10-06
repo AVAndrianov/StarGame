@@ -39,7 +39,7 @@ public abstract class SpritesPool<T extends Sprite> {
             if (sprite.isDestroyed()) {
                 free(sprite);
                 i--;
-                sprite.flushDestroyed();
+                sprite.flushDestroyed(); //false
             }
         }
     }

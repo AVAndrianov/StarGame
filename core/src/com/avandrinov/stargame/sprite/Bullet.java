@@ -38,8 +38,11 @@ public class Bullet extends Sprite {
     @Override
     public void update(float delta) {
         this.pos.mulAdd(v, delta);
-        if (isOutside(worldBounds))
+        if (isOutside(worldBounds)) {
             destroyed();
+            System.out.println("hello");
+        }
+
     }
 
     public int getDamage() {

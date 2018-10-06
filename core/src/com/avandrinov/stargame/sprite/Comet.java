@@ -137,6 +137,10 @@ public class Comet extends Sprite {
             return 0;
     }
 
+    public void collision() {
+
+    }
+
     public void saveZone() {
         if (pos.x < worldBounds.getHalfWidth() *-1 + 0.3f && pos.y < -0.3f)
             cometStartPosition();

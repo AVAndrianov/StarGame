@@ -1,8 +1,10 @@
 package com.avandrinov.stargame.screen;
 
+import com.avandrinov.stargame.base.Font;
 import com.avandrinov.stargame.math.Rect;
 import com.avandrinov.stargame.pool.BulletPool;
 import com.avandrinov.stargame.sprite.Boom;
+import com.avandrinov.stargame.sprite.Bullet;
 import com.avandrinov.stargame.sprite.Comet;
 import com.avandrinov.stargame.sprite.Moon;
 import com.avandrinov.stargame.sprite.Saucer;
@@ -13,9 +15,11 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
 
 import java.util.ArrayList;
 
@@ -36,6 +40,13 @@ public class TheRescuePart1Screen extends BaseScreen {
     private JoyStick joyStick;
     private Sound sound;
     private BulletPool bulletPool;
+    private Rect worldBounds;
+    int frags;
+    Font font;
+    StringBuilder sbFrags = new StringBuilder();
+    StringBuilder sbHP = new StringBuilder();
+    StringBuilder sbLevel = new StringBuilder();
+
 
     TheRescuePart1Screen(Game game, int difficultyLevel) {
         super(game);
@@ -47,6 +58,8 @@ public class TheRescuePart1Screen extends BaseScreen {
     public void show() {
         super.show();
         sound = Gdx.audio.newSound(Gdx.files.internal("sounds/openSpace.mp3"));
+        font = new Font("font/font.fnt", "font/font.png");
+        font.setFontSize(0.1f);
         cometList = new ArrayList<Comet>();
         joyStick = new JoyStick();
         circleSmall = new CircleSmall();
@@ -62,8 +75,6 @@ public class TheRescuePart1Screen extends BaseScreen {
         sound.play(0.3f);
         bulletPool = new BulletPool();
         saucer = new Saucer(bulletPool, new TextureAtlas("textures/bulletPack.txt"));
-
-
     }
 
     private void loadTextures() {
@@ -79,6 +90,8 @@ public class TheRescuePart1Screen extends BaseScreen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         update(delta);
         batch.begin();
+//        font.draw(batch, "Hello", , -0.1f);
+
         //Отрисовка тарелки
         if (saucerOnTheMoon) {
             if (saucer.saucerLanded(moon).equals("LandedComplete"))
@@ -115,6 +128,22 @@ public class TheRescuePart1Screen extends BaseScreen {
                 boom.draw(batch);
             }
         }
+        //Столкновение с пулей
+        for (int i = 0; i < quantityComet; i++) {
+            Comet com = cometList.get(i);
+            baseVector.set(com.pos);
+            for (int j = 0; j < bulletPool.getActiveObject().size(); j++) {
+                Bullet bullet = bulletPool.getActiveObject().get(j);
+                baseVector2.set(bullet.pos);
+                if (baseVector2.sub(baseVector).len() < 0.03f) {
+                    frags++;
+                    boom.pos.set(com.pos);
+                    com.cometStartPosition();
+                    bullet.destroyed();
+                    boom.draw(batch);
+                }
+            }
+        }
         //Столкновение комет с кометами
         for (int i = 0; i < quantityComet - 1; i++) {
             Comet comI = cometList.get(i);
@@ -131,6 +160,7 @@ public class TheRescuePart1Screen extends BaseScreen {
             }
         }
         bulletPool.drawActiveObject(batch);
+        printInfo();
         batch.end();
         //Посадка на луну
         if (moon.pos.cpy().sub(saucer.pos).len() < 0.15f)
@@ -168,8 +198,12 @@ public class TheRescuePart1Screen extends BaseScreen {
         for (int i = 0; i < quantityComet; i++) {
             cometList.get(i).resize(worldBounds);
         }
+        this.worldBounds = worldBounds;
     }
-
+    private void printInfo() {
+        sbFrags.setLength(0);
+        font.draw(batch, sbFrags.append(frags), 0, worldBounds.getTop() - 0.01f, Align.center);
+    }
     public void deleteAllDestroyed() {
         bulletPool.freeAllDestroyedActiveObject();
     }
@@ -182,12 +216,9 @@ public class TheRescuePart1Screen extends BaseScreen {
             else
                 saucer.soundStop();
         }
-//        for (int i = 0; i < star.length; i++) {
-//            star[i].update(delta);
-//        }
         saucer.update(delta);
-//        bulletPool.updateActiveObjects(delta);
         bulletPool.updateActiveObject(delta);
+        bulletPool.freeAllDestroyedActiveObject();
     }
 
     @Override
