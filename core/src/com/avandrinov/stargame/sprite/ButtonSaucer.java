@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class ButtonSaucer extends Button {
     private float x = -0.1f;
     private float y = 0.42f;
-    private float size = 10f;
+    private float size = 3f;
     private TextureAtlas atlas;
     private ArrayList<TextureRegion> listSaucerLuminescence;
     private ArrayList<TextureRegion> listSaucerDifficultyLevel;
@@ -25,12 +25,10 @@ public class ButtonSaucer extends Button {
 
 
 
-    public ButtonSaucer(float size, ActionListener actionListener) {
+    public ButtonSaucer(TextureAtlas atlas, ActionListener actionListener) {
         menu = true;
-        this.size = size;
         worldBounds = new Rect();
         landedMenu = new Vector2(0, -0.01f);
-        atlas = new TextureAtlas("textures/saucerPack.txt");
         listSaucerDifficultyLevel = new ArrayList<TextureRegion>();
         listSaucerLuminescence = new ArrayList<TextureRegion>();
         for (int i = 1; i <= 4; i++) {
@@ -82,15 +80,7 @@ public class ButtonSaucer extends Button {
 
     @Override
     public void update(float delta) {
-            if (frame > 3) {
-                if (pos.y > 0.1f) {
-                    saucerLandedLuminescence();
-                    pos.mulAdd(landedMenu, delta);
-                } else {
-                    frame = 3;
-                }
-            }
-            difficultyLevel = frame + 1;
+//            saucerLandedMenu();
         super.update(delta);
     }
 }

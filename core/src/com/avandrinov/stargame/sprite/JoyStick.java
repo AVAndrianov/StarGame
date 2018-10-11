@@ -12,8 +12,7 @@ public class JoyStick extends AnalogStick {
     private ArrayList<TextureRegion> stickList;
     private TextureAtlas atlas;
 
-    public JoyStick() {
-        atlas = new TextureAtlas("textures/otherPack.txt");
+    public JoyStick(TextureAtlas atlas) {
         stickList = new ArrayList<TextureRegion>();
         stickList.add(new TextureRegion(
                 atlas.findRegion("stickBig")));

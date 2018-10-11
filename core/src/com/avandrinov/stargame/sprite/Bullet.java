@@ -40,7 +40,6 @@ public class Bullet extends Sprite {
         this.pos.mulAdd(v, delta);
         if (isOutside(worldBounds)) {
             destroyed();
-            System.out.println("hello");
         }
 
     }

@@ -25,6 +25,7 @@ public class MenuScreen extends BaseScreen implements ActionListener {
     private ButtonStart buttonStart;
     private ButtonSaucer buttonSaucer;
     private Sound sound;
+    private TextureAtlas atlas;
 
     public MenuScreen(Game game) {
         super(game);
@@ -33,9 +34,10 @@ public class MenuScreen extends BaseScreen implements ActionListener {
     @Override
     public void show() {
         super.show();
+        atlas = new TextureAtlas("textures/menuPack.txt");
         sound = Gdx.audio.newSound(Gdx.files.internal("sounds/menu.mp3"));
-        buttonSaucer = new ButtonSaucer(3,this);
-        buttonStart = new ButtonStart();
+        buttonSaucer = new ButtonSaucer(atlas,this);
+        buttonStart = new ButtonStart(atlas, this);
         sound.play(0.05f);
     }
 

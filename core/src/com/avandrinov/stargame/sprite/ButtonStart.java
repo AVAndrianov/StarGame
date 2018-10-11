@@ -21,7 +21,6 @@ public class ButtonStart extends Button {
     public ButtonStart(TextureAtlas atlas, ActionListener actionListener) {
         super(atlas.findRegion("start"),actionListener);
         buttonStartList = new ArrayList<TextureRegion>();
-        atlas = new TextureAtlas("textures/otherPack.txt");
         buttonStartList.add(
                 new TextureRegion(
                         atlas.findRegion("start")));

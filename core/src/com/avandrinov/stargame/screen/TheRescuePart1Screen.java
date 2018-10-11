@@ -9,13 +9,11 @@ import com.avandrinov.stargame.sprite.Comet;
 import com.avandrinov.stargame.sprite.Moon;
 import com.avandrinov.stargame.sprite.Saucer;
 import com.avandrinov.stargame.base.BaseScreen;
-import com.avandrinov.stargame.sprite.CircleSmall;
 import com.avandrinov.stargame.sprite.JoyStick;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -32,7 +30,6 @@ public class TheRescuePart1Screen extends BaseScreen {
     private Saucer saucer;
     private Moon moon;
     private Boom boom;
-    private CircleSmall circleSmall;
     private Vector2 baseVector;
     private Vector2 baseVector2;
     private TextureRegion regionComet;
@@ -41,11 +38,11 @@ public class TheRescuePart1Screen extends BaseScreen {
     private Sound sound;
     private BulletPool bulletPool;
     private Rect worldBounds;
-    int frags;
-    Font font;
-    StringBuilder sbFrags = new StringBuilder();
-    StringBuilder sbHP = new StringBuilder();
-    StringBuilder sbLevel = new StringBuilder();
+    private int frags;
+    private Font font;
+    private StringBuilder sbFrags = new StringBuilder();
+    private TextureAtlas atlas;
+
 
 
     TheRescuePart1Screen(Game game, int difficultyLevel) {
@@ -57,15 +54,14 @@ public class TheRescuePart1Screen extends BaseScreen {
     @Override
     public void show() {
         super.show();
+        atlas = new TextureAtlas("textures/saucerPack.txt");
         sound = Gdx.audio.newSound(Gdx.files.internal("sounds/openSpace.mp3"));
         font = new Font("font/font.fnt", "font/font.png");
         font.setFontSize(0.1f);
         cometList = new ArrayList<Comet>();
-        joyStick = new JoyStick();
-        circleSmall = new CircleSmall();
-        joyStick = new JoyStick();
-        moon = new Moon();
-        boom = new Boom();
+        joyStick = new JoyStick(atlas);
+        moon = new Moon(atlas);
+        boom = new Boom(atlas);
         baseVector2 = new Vector2();
         baseVector = new Vector2();
         loadTextures();
@@ -74,11 +70,11 @@ public class TheRescuePart1Screen extends BaseScreen {
         }
         sound.play(0.3f);
         bulletPool = new BulletPool();
-        saucer = new Saucer(bulletPool, new TextureAtlas("textures/bulletPack.txt"));
+        saucer = new Saucer(bulletPool,atlas);
     }
 
     private void loadTextures() {
-        atlasComet = new TextureAtlas("textures/otherPack.txt");
+        atlasComet = new TextureAtlas("textures/saucerPack.txt");
         regionComet = new TextureRegion(
                 atlasComet.findRegion("comet"));
     }
@@ -193,7 +189,6 @@ public class TheRescuePart1Screen extends BaseScreen {
         saucer.resize(worldBounds);
         moon.resize(worldBounds);
         boom.resize(worldBounds);
-        circleSmall.resize(worldBounds);
         joyStick.resize(worldBounds);
         for (int i = 0; i < quantityComet; i++) {
             cometList.get(i).resize(worldBounds);

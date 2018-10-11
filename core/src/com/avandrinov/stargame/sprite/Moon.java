@@ -11,8 +11,7 @@ public class Moon extends Sprite {
     private TextureAtlas atlas;
     private TextureRegion moon;
 
-    public Moon() {
-        atlas = new TextureAtlas("textures/otherPack.txt");
+    public Moon(TextureAtlas atlas) {
         moon = new TextureRegion(
                 atlas.findRegion("moon"));
         sprite(moon);

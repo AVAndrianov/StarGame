@@ -8,10 +8,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Boom extends Sprite {
     private TextureRegion boom;
-    private TextureAtlas atlas;
 
-    public Boom() {
-        atlas = new TextureAtlas("textures/otherPack.txt");
+    public Boom(TextureAtlas atlas) {
         boom = new TextureRegion(
                 atlas.findRegion("boom"));
         sprite(boom);

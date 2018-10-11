@@ -1,5 +1,5 @@
 historyPack.png
-size: 2048, 512
+size: 1024, 512
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
@@ -10,23 +10,9 @@ BoardOfTheShipPart2
   orig: 512, 512
   offset: 0, 0
   index: -1
-historyPart1
-  rotate: false
-  xy: 512, 0
-  size: 512, 512
-  orig: 512, 512
-  offset: 0, 0
-  index: -1
-historyPart2
-  rotate: false
-  xy: 1024, 0
-  size: 512, 512
-  orig: 512, 512
-  offset: 0, 0
-  index: -1
 saucerCrashed
   rotate: false
-  xy: 1536, 0
+  xy: 512, 0
   size: 512, 512
   orig: 512, 512
   offset: 0, 0

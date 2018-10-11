@@ -1,36 +1,53 @@
 package com.avandrinov.stargame.screen;
 
 import com.avandrinov.stargame.base.BaseScreen;
+import com.avandrinov.stargame.base.Font;
 import com.avandrinov.stargame.math.Rect;
 import com.avandrinov.stargame.sprite.GameOver;
 import com.avandrinov.stargame.sprite.HistoryPart;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 
 public class History extends BaseScreen {
     private int historyPartNumber;
     private int difficultyLevel;
     private GameOver gameOver;
     private HistoryPart historyPart;
+    private Font font;
+    private StringBuilder history = new StringBuilder();
+    private Rect worldBounds;
+
 
     History(Game game, int historyPartNumber, int difficultyLevel) {
         super(game);
         this.historyPartNumber = historyPartNumber;
         this.difficultyLevel = difficultyLevel;
         gameOver = new GameOver();
-        historyPart = new HistoryPart();
+//        historyPart = new HistoryPart();
+        font = new Font("font2/calibri.fnt", "font2/calibri.png");
+        font.setColor(Color.BLACK);
+        font.setFontSize(0.05f);
     }
 
 
     @Override
     public void show() {
-        if (historyPartNumber > 0)
-            historyPart.chosePart(historyPartNumber);
+//        if (historyPartNumber > 0)
+//            historyPart.chosePart(historyPartNumber);
     }
 
     @Override
@@ -43,7 +60,7 @@ public class History extends BaseScreen {
             gameOver.draw(batch);
 
         else
-            historyPart.draw(batch);
+            printInfo();
         batch.end();
     }
 
@@ -96,7 +113,35 @@ public class History extends BaseScreen {
     @Override
     public void resize(Rect worldBounds) {
         gameOver.resize(worldBounds);
-        historyPart.resize(worldBounds);
+//        historyPart.resize(worldBounds);
+        this.worldBounds = worldBounds;
+    }
+
+    private void printInfo() {
+        history.setLength(0);
+        String patch = "history/part" + historyPartNumber + ".txt";
+        font.draw(batch, history.append(readTextFromInputStream(patch)), 0, worldBounds.getTop() - 0.01f, Align.center);
+    }
+
+    static public String readTextFromInputStream(String in) {
+        StringBuilder text = new StringBuilder();
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new InputStreamReader(new FileInputStream(in)));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        String line = null;
+        String newline = System.getProperty("line.separator");
+        try {
+            while ((line = reader.readLine()) != null) {
+                text.append(line);
+                text.append(newline);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return text.toString();
     }
 
     @Override

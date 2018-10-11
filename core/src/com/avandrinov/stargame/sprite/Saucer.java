@@ -44,7 +44,7 @@ public class Saucer extends Ship {
     private Vector2 bulletV = new Vector2(0, 0.5f);
 
     public Saucer(BulletPool bulletPool, TextureAtlas atlas) {
-        super(atlas.findRegion("bullet"), 1, 2, 2, bulletPool);
+        super(atlas.findRegion("saucer"), 1, 1, 1, bulletPool);
         this.bulletPool = bulletPool;
         buf = new Vector2(0f, 0f);
         buf2 = new Vector2(0f, 0f);
@@ -54,7 +54,6 @@ public class Saucer extends Ship {
         downVector = new Vector2(0f, saucerSpeedArrows * -1);
         worldBounds = new Rect();
         saucerFly = new SaucerFly();
-            atlas = new TextureAtlas("textures/saucerPack.txt");
         listSaucerLuminescence = new ArrayList<TextureRegion>();
         listSaucerLandedLuminescence = new ArrayList<TextureRegion>();
         for (int i = 1; i <= 4; i++) {
@@ -67,7 +66,7 @@ public class Saucer extends Ship {
                             atlas.findRegion(
                                     "saucerLuminescence" + i)));
         }
-        bulletRegion = atlas.findRegion("saucerDifficultyLevel4");
+        bulletRegion = atlas.findRegion("bullet");
 
         sprite(listSaucerLuminescence, listSaucerLandedLuminescence);
 
